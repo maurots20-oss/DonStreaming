@@ -87,7 +87,7 @@
       <div id="formM3u" class="hidden">
         <div class="input-group">
           <label>URL COMPLETA M3U</label>
-          <input type="text" id="inputM3u" placeholder="https://servidor.com/get.php?username=...&password=...">
+          <input type="text" id="inputM3u" placeholder="https://servidor.com/playlist/user/pass/m3u8">
         </div>
       </div>
 
@@ -204,30 +204,47 @@
       }
     }
 
-    async function fetchProxy(targetUrl) {
-      const proxies = [
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
+    // Petición rápida con tiempo límite estricto de 6 segundos
+    async function fetchWithTimeout(url, timeoutMs = 6000) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(id);
+        if (response.ok) {
+          const text = await response.text();
+          if (text && text.length > 50) return text;
+        }
+      } catch (e) {
+        clearTimeout(id);
+      }
+      return null;
+    }
+
+    async function fetchProxyFast(targetUrl) {
+      // 1. Conexión Directa al servidor
+      mostrarAlerta('⏳ Conectando directamente al servidor...', 'ok');
+      let directRes = await fetchWithTimeout(targetUrl, 5000);
+      if (directRes) return directRes;
+
+      // 2. Proxies alternativos con tiempos de espera cortos
+      const proxyList = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
       ];
 
-      for (let i = 0; i < proxies.length; i++) {
-        try {
-          mostrarAlerta(`⏳ Conectando vía servidor (${i + 1}/${proxies.length})...`, 'ok');
-          let res = await fetch(proxies[i]);
-          if (res.ok) {
-            let data = await res.text();
-            if (data && data.length > 30 && !data.includes("error")) {
-              return data;
-            }
-          }
-        } catch(err) {}
+      for (let i = 0; i < proxyList.length; i++) {
+        mostrarAlerta(`⏳ Conectando vía vía rápida (${i + 1}/${proxyList.length})...`, 'ok');
+        let res = await fetchWithTimeout(proxyList[i], 6000);
+        if (res) return res;
       }
-      throw new Error('No fue posible conectar con el servidor.');
+
+      throw new Error('No se pudo descargar la lista.');
     }
 
     async function iniciarConexion() {
-      mostrarAlerta('⏳ Iniciando autenticación...', 'ok');
+      mostrarAlerta('⏳ Iniciando conexión...', 'ok');
 
       let targetM3uUrl = '';
 
@@ -236,15 +253,13 @@
         let u = document.getElementById('inputUser').value.trim();
         let p = document.getElementById('inputPass').value.trim();
 
-        if (!h || !u || !p) return mostrarAlerta('Por favor llena Servidor, Usuario y Clave.', 'err');
+        if (!h || !u || !p) return mostrarAlerta('Ingresa Servidor, Usuario y Contraseña.', 'err');
         
-        // Limpiar barras finales si existen
         while (h.endsWith('/')) h = h.slice(0, -1);
         if (!h.startsWith('http://') && !h.startsWith('https://')) {
           h = 'https://' + h;
         }
 
-        // Construcción de enlace compatible con XUI.one y Xtream
         targetM3uUrl = `${h}/get.php?username=${u}&password=${p}&type=m3u_plus`;
       } else if (activeTab === 'm3u') {
         targetM3uUrl = document.getElementById('inputM3u').value.trim();
@@ -252,7 +267,7 @@
       }
 
       try {
-        let rawContent = await fetchProxy(targetM3uUrl);
+        let rawContent = await fetchProxyFast(targetM3uUrl);
         let lines = rawContent.split('\n');
 
         let categoriesMap = {};
@@ -260,8 +275,8 @@
         let currentGroup = 'GENERAL';
         let currentTitle = '';
 
-        lines.forEach(line => {
-          line = line.trim();
+        for (let i = 0; i < lines.length; i++) {
+          let line = lines[i].trim();
           if (line.startsWith('#EXTINF:')) {
             let groupMatch = line.match(/group-title="([^"]+)"/);
             currentGroup = groupMatch ? groupMatch[1].toUpperCase() : 'GENERAL';
@@ -278,20 +293,20 @@
               url: line
             });
           }
-        });
+        }
 
         appData.categories = Object.values(categoriesMap);
         appData.channels = streams;
 
         if (appData.categories.length === 0) {
-          return mostrarAlerta('❌ Usuario/clave incorrectos o la suscripción venció.', 'err');
+          return mostrarAlerta('❌ Usuario o clave incorrectos, o la lista está vacía.', 'err');
         }
 
         document.getElementById('txtTotalCarpetas').innerText = `${appData.categories.length} Carpetas`;
         irA('screenDash');
 
       } catch (err) {
-        mostrarAlerta('❌ No se pudo establecer enlace. Verifica si los datos o la contraseña están activos.', 'err');
+        mostrarAlerta('❌ El servidor no respondió. Si usas la pestaña "Lista M3U", prueba ingresar por "🔑 SERVIDOR" colocando el Servidor, Usuario y Clave por separado.', 'err');
       }
     }
 
@@ -331,17 +346,24 @@
       if (element) element.classList.add('active');
 
       let video = document.getElementById('mainVideo');
-      let proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(streamUrl)}`;
+      let proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(streamUrl)}`;
 
       if (playerInstance) playerInstance.destroy();
 
       if (Hls.isSupported()) {
         playerInstance = new Hls();
-        playerInstance.loadSource(proxyUrl);
+        playerInstance.loadSource(streamUrl); // Intento directo de video
         playerInstance.attachMedia(video);
         playerInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+        
+        playerInstance.on(Hls.Events.ERROR, function (event, data) {
+          if (data.fatal) {
+            // Si falla directo, usa proxy para el video
+            playerInstance.loadSource(proxyUrl);
+          }
+        });
       } else {
-        video.src = proxyUrl;
+        video.src = streamUrl;
         video.play().catch(() => {});
       }
     }
