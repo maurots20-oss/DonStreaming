@@ -42,13 +42,13 @@
     .card-tile:hover { border-color: #3b82f6; background: #1e293b; }
     .card-tile i { font-size: 36px; margin-bottom: 10px; color: #3b82f6; }
 
-    .folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; padding: 20px; }
-    .folder-card { background: #151c2c; padding: 14px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid #2a354c; font-size: 13px; }
-    .folder-card:hover { background: #2563eb; }
+    .folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; padding: 20px; }
+    .folder-card { background: #151c2c; padding: 14px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid #2a354c; font-size: 13px; font-weight: bold; }
+    .folder-card:hover { background: #2563eb; border-color: #60a5fa; }
 
     .player-container { display: flex; height: calc(100vh - 60px); }
-    .channel-list { width: 300px; background: #151c2c; padding: 10px; overflow-y: auto; border-right: 1px solid #2a354c; }
-    .channel-item { padding: 10px; background: #0b0f19; margin-bottom: 5px; border-radius: 6px; cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .channel-list { width: 320px; background: #151c2c; padding: 10px; overflow-y: auto; border-right: 1px solid #2a354c; }
+    .channel-item { padding: 12px; background: #0b0f19; margin-bottom: 6px; border-radius: 6px; cursor: pointer; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px; }
     .channel-item:hover, .channel-item.active { background: #2563eb; }
     .video-view { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 100%; }
@@ -72,7 +72,7 @@
       <div id="formXtream">
         <div class="input-group">
           <label>URL DEL SERVIDOR / DNS</label>
-          <input type="text" id="inputHost" placeholder="https://flowpremium.digital:2087">
+          <input type="text" id="inputHost" placeholder="https://zona593latin.top">
         </div>
         <div class="input-group">
           <label>USUARIO</label>
@@ -109,31 +109,34 @@
     </div>
   </div>
 
+  <!-- PANTALLA DASHBOARD -->
   <div id="screenDash" class="hidden">
     <div class="top-bar">
       <div class="logo-box" style="margin:0; min-height:auto;"><h2>DON STREAMING</h2></div>
-      <button onclick="cerrarSesion()" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">Salir</button>
+      <button onclick="cerrarSesion()" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">Cerrar Sesión</button>
     </div>
     <div class="grid-container">
       <div class="card-tile" onclick="mostrarCarpetas()">
         <i class="fa-solid fa-tv"></i>
         <h3>CANALES DE TV</h3>
-        <p id="txtTotalCarpetas">0 Carpetas</p>
+        <p id="txtTotalCarpetas">Cargando categorías...</p>
       </div>
     </div>
   </div>
 
+  <!-- PANTALLA CARPETAS / CATEGORÍAS -->
   <div id="screenFolders" class="hidden">
     <div class="top-bar">
-      <button onclick="irA('screenDash')" style="background:#2a354c; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">Volver</button>
+      <button onclick="irA('screenDash')" style="background:#2a354c; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">⬅ Volver al Inicio</button>
       <h4>CATEGORÍAS DE TV</h4>
     </div>
     <div id="foldersBox" class="folders-grid"></div>
   </div>
 
+  <!-- PANTALLA REPRODUCTOR Y LISTA -->
   <div id="screenPlayer" class="hidden">
     <div class="top-bar">
-      <button onclick="irA('screenFolders')" style="background:#2a354c; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">Volver a Categorías</button>
+      <button onclick="irA('screenFolders')" style="background:#2a354c; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">⬅ Volver a Categorías</button>
       <span id="currentCatTitle" style="color:#60a5fa; font-weight:bold;"></span>
     </div>
     <div class="player-container">
@@ -146,6 +149,7 @@
     let activeTab = 'xtream';
     let appData = { categories: [], channels: [] };
     let playerInstance = null;
+    let currentServerInfo = { host: '', user: '', pass: '' };
 
     window.onload = () => {
       let savedLogo = localStorage.getItem('custom_logo');
@@ -204,49 +208,45 @@
       }
     }
 
-    // Petición rápida con tiempo límite estricto de 6 segundos
-    async function fetchWithTimeout(url, timeoutMs = 6000) {
-      const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const response = await fetch(url, { signal: controller.signal });
-        clearTimeout(id);
-        if (response.ok) {
-          const text = await response.text();
-          if (text && text.length > 50) return text;
-        }
-      } catch (e) {
-        clearTimeout(id);
-      }
-      return null;
-    }
-
-    async function fetchProxyFast(targetUrl) {
-      // 1. Conexión Directa al servidor
-      mostrarAlerta('⏳ Conectando directamente al servidor...', 'ok');
-      let directRes = await fetchWithTimeout(targetUrl, 5000);
-      if (directRes) return directRes;
-
-      // 2. Proxies alternativos con tiempos de espera cortos
-      const proxyList = [
+    async function fetchJsonWithProxy(targetUrl) {
+      const proxies = [
         `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
         `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
         `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
       ];
 
-      for (let i = 0; i < proxyList.length; i++) {
-        mostrarAlerta(`⏳ Conectando vía vía rápida (${i + 1}/${proxyList.length})...`, 'ok');
-        let res = await fetchWithTimeout(proxyList[i], 6000);
-        if (res) return res;
+      for (let p of proxies) {
+        try {
+          let res = await fetch(p);
+          if (res.ok) {
+            let data = await res.json();
+            if (data) return data;
+          }
+        } catch(e) {}
       }
+      throw new Error('No se pudo obtener respuesta JSON.');
+    }
 
-      throw new Error('No se pudo descargar la lista.');
+    async function fetchTextWithProxy(targetUrl) {
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+      ];
+
+      for (let p of proxies) {
+        try {
+          let res = await fetch(p);
+          if (res.ok) {
+            let text = await res.text();
+            if (text && text.length > 50) return text;
+          }
+        } catch(e) {}
+      }
+      throw new Error('Error al descargar lista M3U.');
     }
 
     async function iniciarConexion() {
-      mostrarAlerta('⏳ Iniciando conexión...', 'ok');
-
-      let targetM3uUrl = '';
+      mostrarAlerta('⏳ Autenticando con el servidor...', 'ok');
 
       if (activeTab === 'xtream') {
         let h = document.getElementById('inputHost').value.trim();
@@ -256,18 +256,49 @@
         if (!h || !u || !p) return mostrarAlerta('Ingresa Servidor, Usuario y Contraseña.', 'err');
         
         while (h.endsWith('/')) h = h.slice(0, -1);
-        if (!h.startsWith('http://') && !h.startsWith('https://')) {
-          h = 'https://' + h;
-        }
+        if (!h.startsWith('http://') && !h.startsWith('https://')) h = 'https://' + h;
 
-        targetM3uUrl = `${h}/get.php?username=${u}&password=${p}&type=m3u_plus`;
-      } else if (activeTab === 'm3u') {
-        targetM3uUrl = document.getElementById('inputM3u').value.trim();
-        if (!targetM3uUrl) return mostrarAlerta('Ingresa la URL del archivo M3U.', 'err');
+        currentServerInfo = { host: h, user: u, pass: p };
+
+        try {
+          // 1. Obtener Categorías directamente vía API JSON
+          let catUrl = `${h}/player_api.php?username=${u}&password=${p}&action=get_live_categories`;
+          mostrarAlerta('⏳ Descargando categorías...', 'ok');
+          let categories = await fetchJsonWithProxy(catUrl);
+
+          // 2. Obtener Canales directamente vía API JSON
+          let streamUrl = `${h}/player_api.php?username=${u}&password=${p}&action=get_live_streams`;
+          mostrarAlerta('⏳ Descargando canales...', 'ok');
+          let streams = await fetchJsonWithProxy(streamUrl);
+
+          if (Array.isArray(categories) && categories.length > 0) {
+            appData.categories = categories.map(c => ({ id: c.category_id, name: c.category_name }));
+            appData.channels = Array.isArray(streams) ? streams.map(s => ({
+              id: s.stream_id,
+              catId: s.category_id,
+              name: s.name,
+              ext: s.container_extension || 'm3u8',
+              url: `${h}/live/${u}/${p}/${s.stream_id}.${s.container_extension || 'm3u8'}`
+            })) : [];
+
+            document.getElementById('txtTotalCarpetas').innerText = `${appData.categories.length} Carpetas`;
+            irA('screenDash');
+            return;
+          }
+        } catch (err) {
+          console.log('Falló API JSON, intentando método M3U...');
+        }
       }
 
+      // Si falla API o si usó la pestaña M3U:
       try {
-        let rawContent = await fetchProxyFast(targetM3uUrl);
+        let m3uTarget = activeTab === 'm3u' 
+          ? document.getElementById('inputM3u').value.trim()
+          : `${currentServerInfo.host}/get.php?username=${currentServerInfo.user}&password=${currentServerInfo.pass}&type=m3u_plus`;
+
+        if (!m3uTarget) return mostrarAlerta('Ingresa la URL del archivo M3U.', 'err');
+
+        let rawContent = await fetchTextWithProxy(m3uTarget);
         let lines = rawContent.split('\n');
 
         let categoriesMap = {};
@@ -275,11 +306,11 @@
         let currentGroup = 'GENERAL';
         let currentTitle = '';
 
-        for (let i = 0; i < lines.length; i++) {
-          let line = lines[i].trim();
+        for (let line of lines) {
+          line = line.trim();
           if (line.startsWith('#EXTINF:')) {
-            let groupMatch = line.match(/group-title="([^"]+)"/);
-            currentGroup = groupMatch ? groupMatch[1].toUpperCase() : 'GENERAL';
+            let groupMatch = line.match(/group-title=["']?([^"',]+)["']?/i);
+            currentGroup = groupMatch ? groupMatch[1].trim().toUpperCase() : 'GENERAL';
 
             let titleMatch = line.match(/,(.+)$/);
             currentTitle = titleMatch ? titleMatch[1].trim() : 'Canal';
@@ -299,14 +330,14 @@
         appData.channels = streams;
 
         if (appData.categories.length === 0) {
-          return mostrarAlerta('❌ Usuario o clave incorrectos, o la lista está vacía.', 'err');
+          return mostrarAlerta('❌ Usuario o clave incorrectos.', 'err');
         }
 
         document.getElementById('txtTotalCarpetas').innerText = `${appData.categories.length} Carpetas`;
         irA('screenDash');
 
       } catch (err) {
-        mostrarAlerta('❌ El servidor no respondió. Si usas la pestaña "Lista M3U", prueba ingresar por "🔑 SERVIDOR" colocando el Servidor, Usuario y Clave por separado.', 'err');
+        mostrarAlerta('❌ Error de conexión. Revisa que el usuario y la clave estén activos.', 'err');
       }
     }
 
@@ -315,10 +346,16 @@
       let box = document.getElementById('foldersBox');
       box.innerHTML = '';
 
+      if (appData.categories.length === 0) {
+        box.innerHTML = '<p style="padding:20px; color:#fca5a5;">No se encontraron categorías disponibles.</p>';
+        return;
+      }
+
       appData.categories.forEach(cat => {
+        let count = appData.channels.filter(c => String(c.catId) === String(cat.id)).length;
         let item = document.createElement('div');
         item.className = 'folder-card';
-        item.innerHTML = `<i class="fa-solid fa-folder" style="color:#3b82f6;"></i> <span>${cat.name}</span>`;
+        item.innerHTML = `<i class="fa-solid fa-folder" style="color:#3b82f6; font-size:18px;"></i> <span>${cat.name} (${count})</span>`;
         item.onclick = () => abrirListaCanales(cat.id, cat.name);
         box.appendChild(item);
       });
@@ -332,10 +369,15 @@
       let box = document.getElementById('channelsBox');
       box.innerHTML = '';
 
+      if (filtered.length === 0) {
+        box.innerHTML = '<div style="padding:15px; color:#94a3b8;">No hay canales en esta categoría.</div>';
+        return;
+      }
+
       filtered.forEach(ch => {
         let btn = document.createElement('div');
         btn.className = 'channel-item';
-        btn.innerText = ch.name;
+        btn.innerHTML = `<i class="fa-solid fa-play-circle" style="color:#3b82f6;"></i> <span>${ch.name}</span>`;
         btn.onclick = () => reproducir(ch.url, btn);
         box.appendChild(btn);
       });
@@ -346,19 +388,18 @@
       if (element) element.classList.add('active');
 
       let video = document.getElementById('mainVideo');
-      let proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(streamUrl)}`;
 
       if (playerInstance) playerInstance.destroy();
 
       if (Hls.isSupported()) {
         playerInstance = new Hls();
-        playerInstance.loadSource(streamUrl); // Intento directo de video
+        playerInstance.loadSource(streamUrl);
         playerInstance.attachMedia(video);
         playerInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
         
         playerInstance.on(Hls.Events.ERROR, function (event, data) {
           if (data.fatal) {
-            // Si falla directo, usa proxy para el video
+            let proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
             playerInstance.loadSource(proxyUrl);
           }
         });
