@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Don Streaming Player</title>
   
-  <!-- Carga de reproductor HLS e Íconos -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -14,36 +13,29 @@
     body { background-color: #0b0f19; color: #ffffff; min-height: 100vh; }
     .hidden { display: none !important; }
 
-    /* CONTENEDOR PRINCIPAL DE LOGIN */
     .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
     .login-card { background: #151c2c; border: 1px solid #2a354c; border-radius: 16px; padding: 28px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
     
-    /* AREA DEL LOGO */
     .logo-box { margin-bottom: 20px; min-height: 50px; display: flex; justify-content: center; align-items: center; }
-    .logo-box img { max-height: 60px; max-width: 100%; object-fit: contain; }
+    .logo-box img { max-height: 65px; max-width: 100%; object-fit: contain; }
     .logo-box h2 { font-size: 22px; color: #3b82f6; font-weight: bold; letter-spacing: 1px; }
 
-    /* PESTAÑAS VISIBLES */
     .tab-bar { display: flex; background: #0b0f19; padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #2a354c; gap: 4px; }
     .tab-item { flex: 1; padding: 10px 4px; border: none; background: transparent; color: #94a3b8; font-weight: bold; font-size: 11px; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
     .tab-item.active { background: #2563eb; color: #ffffff; }
 
-    /* CAMPOS DE ENTRADA */
     .input-group { text-align: left; margin-bottom: 12px; }
     .input-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 5px; font-weight: bold; }
     .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2a354c; background: #0b0f19; color: #fff; font-size: 13px; outline: none; }
     .input-group input:focus { border-color: #3b82f6; }
 
-    /* BOTONES */
     .btn-submit { width: 100%; padding: 12px; background: #2563eb; border: none; border-radius: 8px; color: #fff; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
     .btn-submit:hover { background: #1d4ed8; }
 
-    /* MENSAJES DE ESTADO */
     .alert { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; text-align: center; }
     .alert-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
     .alert-success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
 
-    /* VISTA DASHBOARD Y CONTENIDO */
     .top-bar { background: #151c2c; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a354c; }
     .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; padding: 25px; }
     .card-tile { background: #151c2c; border-radius: 12px; padding: 25px; text-align: center; cursor: pointer; border: 1px solid #2a354c; }
@@ -54,7 +46,6 @@
     .folder-card { background: #151c2c; padding: 14px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid #2a354c; font-size: 13px; }
     .folder-card:hover { background: #2563eb; }
 
-    /* REPRODUCTOR Y LISTA DE CANALES */
     .player-container { display: flex; height: calc(100vh - 60px); }
     .channel-list { width: 300px; background: #151c2c; padding: 10px; overflow-y: auto; border-right: 1px solid #2a354c; }
     .channel-item { padding: 10px; background: #0b0f19; margin-bottom: 5px; border-radius: 6px; cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -65,23 +56,19 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE ACCESO PRINCIPAL -->
   <div id="screenLogin" class="login-wrapper">
     <div class="login-card">
       
-      <!-- LOGO O NOMBRE -->
       <div class="logo-box" id="brandingHeader">
         <h2>DON STREAMING</h2>
       </div>
 
-      <!-- BOTONES DE PESTAÑAS (SIEMPRE VISIBLES) -->
       <div class="tab-bar">
         <button id="tabBtnXtream" class="tab-item active" onclick="switchTab('xtream')">🔑 Servidor</button>
         <button id="tabBtnM3u" class="tab-item" onclick="switchTab('m3u')">🏷️ Lista M3U</button>
         <button id="tabBtnLogo" class="tab-item" onclick="switchTab('logo')">🖼️ Logo</button>
       </div>
 
-      <!-- FORMULARIO 1: SERVIDOR / XTREAM / XUI -->
       <div id="formXtream">
         <div class="input-group">
           <label>URL DEL SERVIDOR / DNS</label>
@@ -97,7 +84,6 @@
         </div>
       </div>
 
-      <!-- FORMULARIO 2: URL DIRECTA M3U -->
       <div id="formM3u" class="hidden">
         <div class="input-group">
           <label>URL COMPLETA M3U</label>
@@ -105,7 +91,6 @@
         </div>
       </div>
 
-      <!-- FORMULARIO 3: LOGO PERSONALIZADO -->
       <div id="formLogo" class="hidden">
         <div class="input-group">
           <label>SELECCIONAR IMAGEN (PNG / JPG)</label>
@@ -118,14 +103,12 @@
         </div>
       </div>
 
-      <!-- BOTÓN INGRESAR -->
       <button id="btnAction" class="btn-submit" onclick="iniciarConexion()">🚀 INICIAR SESIÓN</button>
       <div id="statusAlert" class="alert hidden"></div>
 
     </div>
   </div>
 
-  <!-- PANELS DENTRO DE LA APP -->
   <div id="screenDash" class="hidden">
     <div class="top-bar">
       <div class="logo-box" style="margin:0; min-height:auto;"><h2>DON STREAMING</h2></div>
@@ -164,7 +147,6 @@
     let appData = { categories: [], channels: [] };
     let playerInstance = null;
 
-    // Al cargar la página, recupera el logo guardado si existe
     window.onload = () => {
       let savedLogo = localStorage.getItem('custom_logo');
       if (savedLogo) aplicarLogo(savedLogo);
@@ -222,17 +204,22 @@
       }
     }
 
-    async function fetchProxy(url) {
+    async function fetchProxy(targetUrl) {
       const proxies = [
-        `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
       ];
-      for (let p of proxies) {
+
+      for (let i = 0; i < proxies.length; i++) {
         try {
-          let res = await fetch(p);
+          mostrarAlerta(`⏳ Conectando vía servidor (${i + 1}/${proxies.length})...`, 'ok');
+          let res = await fetch(proxies[i]);
           if (res.ok) {
             let data = await res.text();
-            if (data && data.length > 20) return data;
+            if (data && data.length > 30 && !data.includes("error")) {
+              return data;
+            }
           }
         } catch(err) {}
       }
@@ -240,7 +227,7 @@
     }
 
     async function iniciarConexion() {
-      mostrarAlerta('⏳ Conectando y cargando lista...', 'ok');
+      mostrarAlerta('⏳ Iniciando autenticación...', 'ok');
 
       let targetM3uUrl = '';
 
@@ -250,9 +237,14 @@
         let p = document.getElementById('inputPass').value.trim();
 
         if (!h || !u || !p) return mostrarAlerta('Por favor llena Servidor, Usuario y Clave.', 'err');
-        if (!h.startsWith('http')) h = 'https://' + h;
-        if (h.endsWith('/')) h = h.slice(0, -1);
+        
+        // Limpiar barras finales si existen
+        while (h.endsWith('/')) h = h.slice(0, -1);
+        if (!h.startsWith('http://') && !h.startsWith('https://')) {
+          h = 'https://' + h;
+        }
 
+        // Construcción de enlace compatible con XUI.one y Xtream
         targetM3uUrl = `${h}/get.php?username=${u}&password=${p}&type=m3u_plus`;
       } else if (activeTab === 'm3u') {
         targetM3uUrl = document.getElementById('inputM3u').value.trim();
@@ -299,7 +291,7 @@
         irA('screenDash');
 
       } catch (err) {
-        mostrarAlerta('❌ Error de conexión. Revisa los datos o el estado de tu cuenta.', 'err');
+        mostrarAlerta('❌ No se pudo establecer enlace. Verifica si los datos o la contraseña están activos.', 'err');
       }
     }
 
@@ -339,7 +331,7 @@
       if (element) element.classList.add('active');
 
       let video = document.getElementById('mainVideo');
-      let proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
+      let proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(streamUrl)}`;
 
       if (playerInstance) playerInstance.destroy();
 
