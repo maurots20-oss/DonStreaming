@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Don Streaming IPTV - Player Smarters</title>
+  <title>Don Streaming IPTV - Universal Player</title>
 
-  <!-- HLS Player Engine -->
+  <!-- Player Engine & Icons -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
@@ -16,17 +15,18 @@
     .hidden { display: none !important; }
 
     :root {
-      --primary: #3b82f6;
+      --primary: #2563eb;
       --primary-dark: #1d4ed8;
       --bg-card: #111827;
       --bg-input: #0b0f19;
-      --border-color: rgba(255, 255, 255, 0.1);
+      --border-color: rgba(255, 255, 255, 0.12);
     }
 
-    /* LOGO CONFIGURABLE */
-    .app-logo { max-height: 60px; max-width: 220px; object-fit: contain; margin-bottom: 12px; }
+    /* LOGO DISPLAY */
+    .app-logo { max-height: 55px; max-width: 220px; object-fit: contain; margin-bottom: 12px; }
+    .logo-placeholder { font-size: 24px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* LOGIN */
+    /* LOGIN CONTAINER */
     .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(circle at center, #1e293b 0%, #070a12 100%); padding: 20px; }
     .app-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; width: 100%; max-width: 480px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8); }
     
@@ -34,41 +34,42 @@
     .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; }
     .tab-btn.active { background: var(--primary); color: #fff; }
 
-    .input-group { text-align: left; margin-bottom: 12px; }
+    .input-group { text-align: left; margin-bottom: 14px; }
     .input-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
     .input-group input { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: #fff; font-size: 13px; outline: none; }
 
     .btn-submit { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; border-radius: 10px; color: #fff; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
 
-    .status-box { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 12px; text-align: center; }
-    .status-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-    .status-success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    .status-box { margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 12px; text-align: center; font-weight: 600; }
+    .status-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .status-success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
 
-    /* NAVBAR GENERAL */
+    /* TOP NAVBAR */
     .top-menu { background: #0f172a; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
     .top-menu .nav-left { display: flex; align-items: center; gap: 15px; }
     .top-menu .nav-right { display: flex; align-items: center; gap: 10px; }
     .btn-nav { background: #1e293b; border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; }
     .btn-nav:hover { background: var(--primary); }
 
-    /* DASHBOARD PRINCIPAL */
+    /* DASHBOARD */
     .dashboard-container { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e293b 0%, #070a12 100%); }
-    .grid-main { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; padding: 40px; flex: 1; align-content: center; }
+    .grid-main { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; padding: 40px; flex: 1; align-content: center; }
     .tile-card { border-radius: 20px; padding: 35px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
-    .tile-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-    .tile-card i { font-size: 50px; margin-bottom: 15px; }
-    .tile-card h2 { font-size: 22px; font-weight: 800; }
+    .tile-card:hover { transform: translateY(-5px); border-color: #60a5fa; }
+    .tile-card i { font-size: 45px; margin-bottom: 15px; }
+    .tile-card h2 { font-size: 20px; font-weight: 800; }
+    .tile-card p { font-size: 12px; opacity: 0.8; margin-top: 5px; }
 
-    /* VISTA DE CATEGORÍAS (CARPETAS SMARTERS PRO) */
+    /* CATEGORIES GRID */
     .categories-view { flex: 1; padding: 30px; overflow-y: auto; }
     .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 20px; }
-    .folder-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border-color); padding: 20px; border-radius: 14px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
+    .folder-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border-color); padding: 18px; border-radius: 14px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
     .folder-card:hover { background: var(--primary); transform: scale(1.02); }
-    .folder-card i { font-size: 24px; color: #60a5fa; }
+    .folder-card i { font-size: 22px; color: #60a5fa; }
     .folder-card:hover i { color: #fff; }
     .folder-title { font-size: 13px; font-weight: 700; text-transform: uppercase; }
 
-    /* REPRODUCTOR Y LISTA DE CANALES */
+    /* PLAYER INTERFACE */
     .player-view { display: flex; flex: 1; height: calc(100vh - 61px); overflow: hidden; }
     .sidebar-channels { width: 320px; background: #0f172a; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 15px; }
     .search-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #070a12; color: #fff; margin-bottom: 12px; outline: none; font-size: 12px; }
@@ -86,28 +87,36 @@
   <!-- PANTALLA LOGIN -->
   <div id="loginScreen" class="login-wrapper">
     <div class="app-card">
-      <img id="imgLoginLogo" src="https://via.placeholder.com/180x60?text=Don+Streaming" class="app-logo" alt="Logo">
-      <p style="font-size:12px; color:#94a3b8;">Plataforma Web IPTV Professional</p>
+      <div id="logoContainer">
+        <span class="logo-placeholder">Don Streaming</span>
+      </div>
+      <p style="font-size:12px; color:#94a3b8; margin-top: 4px;">Plataforma Web IPTV Professional</p>
 
       <div class="method-tabs">
         <button id="tabXtream" class="tab-btn active" onclick="switchTab('xtream')">🔑 Xtream Codes</button>
         <button id="tabM3u" class="tab-btn" onclick="switchTab('m3u')">🏷️ URL M3U</button>
-        <button id="tabConfig" class="tab-btn" onclick="switchTab('config')">⚙️ Logo / Marca</button>
+        <button id="tabConfig" class="tab-btn" onclick="switchTab('config')">🖼️ Subir Logo</button>
       </div>
 
+      <!-- FORMULARIO XTREAM -->
       <div id="formXtream">
         <div class="input-group"><label>DNS / URL Servidor</label><input type="text" id="xtreamHost" placeholder="http://servidor.com:8080"></div>
         <div class="input-group"><label>Usuario</label><input type="text" id="xtreamUser" placeholder="Usuario"></div>
         <div class="input-group"><label>Contraseña</label><input type="password" id="xtreamPass" placeholder="••••••••"></div>
       </div>
 
+      <!-- FORMULARIO M3U -->
       <div id="formM3u" class="hidden">
         <div class="input-group"><label>URL Lista M3U</label><input type="text" id="m3uUrl" placeholder="http://servidor.com/get.php?username=...&type=m3u"></div>
       </div>
 
+      <!-- CONFIGURADOR DE LOGO (SUBIR DESDE PC/CELULAR) -->
       <div id="formConfig" class="hidden">
-        <div class="input-group"><label>URL Imagen del Logo</label><input type="text" id="customLogoUrl" placeholder="https://midominio.com/logo.png"></div>
-        <button class="btn-submit" onclick="guardarLogo()">💾 Guardar Logo</button>
+        <div class="input-group">
+          <label>Seleccionar Imagen de Logo (PNG / JPG)</label>
+          <input type="file" id="logoFileInput" accept="image/*" onchange="subirLogoArchivo(event)" style="background:transparent; border:none; padding:0;">
+        </div>
+        <p style="font-size:11px; color:#64748b; text-align:left;">Sube una imagen desde tu equipo para personalizar la app.</p>
       </div>
 
       <button id="btnConnect" class="btn-submit" onclick="conectarServidor()">🚀 Cargar IPTV</button>
@@ -115,11 +124,11 @@
     </div>
   </div>
 
-  <!-- PANTALLA DASHBOARD PRINCIPAL -->
+  <!-- DASHBOARD PRINCIPAL -->
   <div id="dashScreen" class="dashboard-container hidden">
     <nav class="top-menu">
       <div class="nav-left">
-        <img class="app-logo main-logo" src="" alt="Logo" style="height:35px; margin:0;">
+        <div class="main-logo-target"></div>
       </div>
       <div class="nav-right">
         <button class="btn-nav" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
@@ -127,17 +136,17 @@
     </nav>
 
     <div class="grid-main">
-      <div class="tile-card" style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);" onclick="cargarCategorias('live')">
+      <div class="tile-card" style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);" onclick="abrirModulo('live')">
         <i class="fa-solid fa-tv"></i>
         <h2>TV EN VIVO</h2>
         <p id="countLive">0 Categorías</p>
       </div>
-      <div class="tile-card" style="background: linear-gradient(135deg, #ec4899 0%, #e11d48 100%);" onclick="cargarCategorias('movies')">
+      <div class="tile-card" style="background: linear-gradient(135deg, #ec4899 0%, #e11d48 100%);" onclick="abrirModulo('movies')">
         <i class="fa-solid fa-film"></i>
         <h2>PELÍCULAS</h2>
         <p id="countMovies">0 Categorías</p>
       </div>
-      <div class="tile-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);" onclick="cargarCategorias('series')">
+      <div class="tile-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);" onclick="abrirModulo('series')">
         <i class="fa-solid fa-clapperboard"></i>
         <h2>SERIES</h2>
         <p id="countSeries">0 Categorías</p>
@@ -145,15 +154,15 @@
     </div>
   </div>
 
-  <!-- PANTALLA CARPETAS / CATEGORÍAS -->
+  <!-- VISTA CARPETAS -->
   <div id="categoriesScreen" class="dashboard-container hidden">
     <nav class="top-menu">
       <div class="nav-left">
         <button class="btn-nav" onclick="irAlDash()"><i class="fa-solid fa-arrow-left"></i> Menú Principal</button>
-        <h3 id="catSectionTitle" style="font-size:15px;">Categorías</h3>
+        <h3 id="catSectionTitle" style="font-size:15px; text-transform:uppercase;">Categorías</h3>
       </div>
       <div class="nav-right">
-        <input type="text" id="catSearch" class="search-input" style="margin:0; width:180px;" placeholder="🔍 Buscar categoría..." oninput="filtrarCategorias()">
+        <input type="text" id="catSearch" class="search-input" style="margin:0; width:180px;" placeholder="🔍 Buscar carpeta..." oninput="filtrarCategorias()">
       </div>
     </nav>
 
@@ -162,21 +171,21 @@
     </div>
   </div>
 
-  <!-- PANTALLA REPRODUCTOR -->
+  <!-- VISTA REPRODUCTOR -->
   <div id="playerScreen" class="dashboard-container hidden">
     <nav class="top-menu">
       <div class="nav-left">
-        <button class="btn-nav" onclick="volverACategorias()"><i class="fa-solid fa-arrow-left"></i> Volver a Categorías</button>
+        <button class="btn-nav" onclick="volverACategorias()"><i class="fa-solid fa-arrow-left"></i> Carpetas</button>
         <span id="currentCatName" style="font-size:13px; font-weight:bold; color:#60a5fa;"></span>
       </div>
       <div class="nav-right">
-        <img class="app-logo main-logo" src="" alt="Logo" style="height:30px; margin:0;">
+        <div class="main-logo-target"></div>
       </div>
     </nav>
 
     <div class="player-view">
       <aside class="sidebar-channels">
-        <input type="text" id="channelSearch" class="search-input" placeholder="🔍 Buscar canal..." oninput="filtrarCanales()">
+        <input type="text" id="channelSearch" class="search-input" placeholder="🔍 Buscar contenido..." oninput="filtrarCanales()">
         <div id="channelList" class="channel-list"></div>
       </aside>
       <main class="video-container">
@@ -187,29 +196,45 @@
 
   <script>
     let activeMethod = 'xtream';
-    let rawCategories = [];
-    let rawStreams = [];
-    let currentMode = 'live';
+    let dataStore = {
+      live: { categories: [], streams: [] },
+      movies: { categories: [], streams: [] },
+      series: { categories: [], streams: [] }
+    };
+    let currentModule = 'live';
     let currentCategoryId = null;
     let hlsEngine = null;
 
     window.onload = function() {
-      let logo = localStorage.getItem('ds_app_logo') || 'https://via.placeholder.com/180x60?text=Don+Streaming';
-      aplicarLogo(logo);
+      cargarLogoGuardado();
     };
 
-    function aplicarLogo(url) {
-      document.getElementById('imgLoginLogo').src = url;
-      document.querySelectorAll('.main-logo').forEach(img => img.src = url);
-      document.getElementById('customLogoUrl').value = url;
+    function cargarLogoGuardado() {
+      const savedLogo = localStorage.getItem('ds_app_logo');
+      if (savedLogo) renderLogo(savedLogo);
     }
 
-    function guardarLogo() {
-      let url = document.getElementById('customLogoUrl').value.trim();
-      if(!url) url = 'https://via.placeholder.com/180x60?text=Don+Streaming';
-      localStorage.setItem('ds_app_logo', url);
-      aplicarLogo(url);
-      mostrarMsg('✅ Logo actualizado correctamente.', 'success');
+    function renderLogo(urlOrBase64) {
+      const container = document.getElementById('logoContainer');
+      container.innerHTML = `<img src="${urlOrBase64}" class="app-logo" alt="Logo" onerror="this.outerHTML='<span class=\\'logo-placeholder\\'>Don Streaming</span>'">`;
+      
+      document.querySelectorAll('.main-logo-target').forEach(el => {
+        el.innerHTML = `<img src="${urlOrBase64}" style="height:32px; object-fit:contain;" alt="Logo" onerror="this.outerHTML='<span class=\\'logo-placeholder\\' style=\\'font-size:16px;\\'>Don Streaming</span>'">`;
+      });
+    }
+
+    function subirLogoArchivo(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64Data = e.target.result;
+          localStorage.setItem('ds_app_logo', base64Data);
+          renderLogo(base64Data);
+          mostrarMsg('✅ Logo subido y guardado exitosamente.', 'success');
+        };
+        reader.readAsDataURL(file);
+      }
     }
 
     function switchTab(m) {
@@ -235,17 +260,19 @@
 
     async function fetchProxy(url) {
       const proxies = [
-        u => u,
         u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
         u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
       ];
       for (let p of proxies) {
         try {
           let res = await fetch(p(url));
-          if (res.ok) return await res.text();
+          if (res.ok) {
+            let text = await res.text();
+            if(text && text.length > 5) return text;
+          }
         } catch(e) {}
       }
-      throw new Error('Error de conexión');
+      throw new Error('CORS Error');
     }
 
     async function conectarServidor() {
@@ -254,41 +281,56 @@
         const user = document.getElementById('xtreamUser').value.trim();
         const pass = document.getElementById('xtreamPass').value.trim();
 
-        if (!host || !user || !pass) return mostrarMsg('Ingresa Servidor, Usuario y Clave.', 'error');
+        if (!host || !user || !pass) return mostrarMsg('⚠️ Completa Servidor, Usuario y Clave.', 'error');
         if (!host.startsWith('http')) host = 'http://' + host;
         if (host.endsWith('/')) host = host.slice(0, -1);
 
-        mostrarMsg('⏳ Cargando carpetas y lista...', 'success');
+        mostrarMsg('⏳ Conectando al servidor y procesando categorías...', 'success');
 
         try {
-          // Obtener categorías y contenidos
-          const catUrl = `${host}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`;
-          const streamUrl = `${host}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
+          // TV EN VIVO
+          const rawLiveCats = await fetchProxy(`${host}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`);
+          const rawLiveStreams = await fetchProxy(`${host}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`);
 
-          const rawCat = await fetchProxy(catUrl);
-          const rawStr = await fetchProxy(streamUrl);
-
-          rawCategories = JSON.parse(rawCat);
-          const streams = JSON.parse(rawStr);
-
-          rawStreams = streams.map(s => ({
+          dataStore.live.categories = JSON.parse(rawLiveCats) || [];
+          const liveStreams = JSON.parse(rawLiveStreams) || [];
+          dataStore.live.streams = liveStreams.map(s => ({
             id: s.stream_id,
             name: s.name,
             category_id: s.category_id,
             url: `${host}/live/${user}/${pass}/${s.stream_id}.m3u8`
           }));
 
-          document.getElementById('countLive').innerText = `${rawCategories.length} Carpetas`;
+          // PELÍCULAS (VOD)
+          try {
+            const rawVodCats = await fetchProxy(`${host}/player_api.php?username=${user}&password=${pass}&action=get_vod_categories`);
+            const rawVodStreams = await fetchProxy(`${host}/player_api.php?username=${user}&password=${pass}&action=get_vod_streams`);
+            dataStore.movies.categories = JSON.parse(rawVodCats) || [];
+            const vodStreams = JSON.parse(rawVodStreams) || [];
+            dataStore.movies.streams = vodStreams.map(s => ({
+              id: s.stream_id,
+              name: s.name,
+              category_id: s.category_id,
+              url: `${host}/movie/${user}/${pass}/${s.stream_id}.${s.container_extension || 'mp4'}`
+            }));
+          } catch(e) {}
+
+          // ACTUALIZAR CONTEOS EN PANTALLA
+          document.getElementById('countLive').innerText = `${dataStore.live.categories.length} Carpetas`;
+          document.getElementById('countMovies').innerText = `${dataStore.movies.categories.length} Carpetas`;
+          document.getElementById('countSeries').innerText = `${dataStore.series.categories.length} Carpetas`;
+
           document.getElementById('loginScreen').classList.add('hidden');
           document.getElementById('dashScreen').classList.remove('hidden');
+
         } catch(e) {
-          mostrarMsg('❌ No se pudo conectar al panel Xtream.', 'error');
+          mostrarMsg('❌ Error de conexión: Revisa si la URL/DNS, Usuario y Clave son correctos.', 'error');
         }
       } else if (activeMethod === 'm3u') {
         const url = document.getElementById('m3uUrl').value.trim();
-        if (!url) return mostrarMsg('Ingresa la URL M3U.', 'error');
+        if (!url) return mostrarMsg('⚠️ Ingresa la URL M3U.', 'error');
 
-        mostrarMsg('⏳ Procesando M3U por categorías...', 'success');
+        mostrarMsg('⏳ Descargando y organizando lista M3U...', 'success');
 
         try {
           const m3uText = await fetchProxy(url);
@@ -296,14 +338,14 @@
           
           let catsMap = {};
           let streams = [];
-          let currentCat = 'GENERAL';
+          let currentCat = 'VARIOS';
           let currentName = '';
 
           for (let line of lines) {
             line = line.trim();
             if (line.startsWith('#EXTINF:')) {
               const groupMatch = line.match(/group-title="([^"]+)"/);
-              currentCat = groupMatch ? groupMatch[1].toUpperCase() : 'GENERAL';
+              currentCat = groupMatch ? groupMatch[1].toUpperCase() : 'VARIOS';
               const nameMatch = line.match(/,(.+)$/);
               currentName = nameMatch ? nameMatch[1].trim() : 'Canal';
               
@@ -318,23 +360,25 @@
             }
           }
 
-          rawCategories = Object.values(catsMap);
-          rawStreams = streams;
+          dataStore.live.categories = Object.values(catsMap);
+          dataStore.live.streams = streams;
 
-          document.getElementById('countLive').innerText = `${rawCategories.length} Carpetas`;
+          document.getElementById('countLive').innerText = `${dataStore.live.categories.length} Carpetas`;
           document.getElementById('loginScreen').classList.add('hidden');
           document.getElementById('dashScreen').classList.remove('hidden');
+
         } catch(e) {
-          mostrarMsg('❌ No se pudo descargar la lista M3U.', 'error');
+          mostrarMsg('❌ No se pudo descargar la lista M3U. Revisa la URL.', 'error');
         }
       }
     }
 
-    function cargarCategorias(mode) {
-      currentMode = mode;
+    function abrirModulo(modulo) {
+      currentModule = modulo;
       document.getElementById('dashScreen').classList.add('hidden');
       document.getElementById('categoriesScreen').classList.remove('hidden');
-      renderCategorias(rawCategories);
+      document.getElementById('catSectionTitle').innerText = `Carpetas (${modulo.toUpperCase()})`;
+      renderCategorias(dataStore[modulo].categories);
     }
 
     function renderCategorias(cats) {
@@ -342,7 +386,7 @@
       grid.innerHTML = '';
 
       if(!cats || cats.length === 0) {
-        grid.innerHTML = '<p style="color:#94a3b8;">No se encontraron categorías.</p>';
+        grid.innerHTML = '<p style="color:#94a3b8; font-size:13px;">No hay carpetas en esta sección.</p>';
         return;
       }
 
@@ -361,20 +405,20 @@
       document.getElementById('categoriesScreen').classList.add('hidden');
       document.getElementById('playerScreen').classList.remove('hidden');
 
-      const canales = rawStreams.filter(s => String(s.category_id) === String(catId));
-      renderCanales(canales);
+      const items = dataStore[currentModule].streams.filter(s => String(s.category_id) === String(catId));
+      renderCanales(items);
     }
 
-    function renderCanales(canales) {
+    function renderCanales(items) {
       const list = document.getElementById('channelList');
       list.innerHTML = '';
 
-      if (!canales || canales.length === 0) {
-        list.innerHTML = '<p style="padding:10px; font-size:11px; color:#94a3b8;">Sin canales en esta carpeta.</p>';
+      if (!items || items.length === 0) {
+        list.innerHTML = '<p style="padding:10px; font-size:11px; color:#94a3b8;">Sin listas disponibles.</p>';
         return;
       }
 
-      canales.forEach(item => {
+      items.forEach(item => {
         const div = document.createElement('div');
         div.className = 'channel-item';
         div.innerText = item.name;
@@ -392,7 +436,7 @@
 
       const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(item.url)}`;
 
-      if (Hls.isSupported()) {
+      if (Hls.isSupported() && item.url.includes('.m3u8')) {
         hlsEngine = new Hls({ enableWorker: true });
         hlsEngine.loadSource(proxiedUrl);
         hlsEngine.attachMedia(video);
@@ -422,13 +466,13 @@
 
     function filtrarCategorias() {
       const q = document.getElementById('catSearch').value.toLowerCase();
-      renderCategorias(rawCategories.filter(c => c.category_name.toLowerCase().includes(q)));
+      renderCategorias(dataStore[currentModule].categories.filter(c => c.category_name.toLowerCase().includes(q)));
     }
 
     function filtrarCanales() {
       const q = document.getElementById('channelSearch').value.toLowerCase();
-      const canales = rawStreams.filter(s => String(s.category_id) === String(currentCategoryId) && s.name.toLowerCase().includes(q));
-      renderCanales(canales);
+      const items = dataStore[currentModule].streams.filter(s => String(s.category_id) === String(currentCategoryId) && s.name.toLowerCase().includes(q));
+      renderCanales(items);
     }
 
     function mostrarMsg(txt, type) {
