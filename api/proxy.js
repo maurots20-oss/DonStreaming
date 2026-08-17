@@ -1,5 +1,8 @@
+// File: api/proxy.js (Función serverless en Vercel)
+import axios from 'axios';
+
 export default async function handler(req, res) {
-  // Habilitar CORS para que tu app pueda consumir la API sin bloqueos
+  // Habilitar cabeceras CORS universales
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
@@ -16,26 +19,26 @@ export default async function handler(req, res) {
   const { url } = req.query;
 
   if (!url) {
-    return res.status(400).json({ error: 'Falta el parámetro url' });
+    return res.status(400).json({ error: 'Falta la URL de origen' });
   }
 
   try {
-    const response = await fetch(decodeURIComponent(url), {
+    const response = await axios({
+      method: 'get',
+      url: decodeURIComponent(url),
+      responseType: 'stream',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-      }
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      timeout: 10000
     });
 
-    const contentType = response.headers.get('content-type') || '';
-
-    if (contentType.includes('application/json')) {
-      const data = await response.json();
-      return res.status(200).json(data);
-    } else {
-      const text = await response.text();
-      return res.status(200).send(text);
+    if (response.headers['content-type']) {
+      res.setHeader('Content-Type', response.headers['content-type']);
     }
+
+    response.data.pipe(res);
   } catch (error) {
-    return res.status(500).json({ error: 'Error consultando la URL solicitada', details: error.message });
+    res.status(500).json({ error: 'Error de conexión con el servidor IPTV: ' + error.message });
   }
 }
