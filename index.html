@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Don Streaming IPTV - Universal Web Player</title>
+  <title>Don Streaming IPTV - Player Smarters</title>
 
   <!-- HLS Player Engine -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -12,180 +12,174 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-    body { background: #0b0f19; color: #ffffff; min-height: 100vh; overflow-x: hidden; }
+    body { background: #070a12; color: #ffffff; min-height: 100vh; overflow-x: hidden; }
     .hidden { display: none !important; }
 
     :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --bg-card: #151c2c;
-      --bg-input: #0d1322;
-      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #3b82f6;
+      --primary-dark: #1d4ed8;
+      --bg-card: #111827;
+      --bg-input: #0b0f19;
+      --border-color: rgba(255, 255, 255, 0.1);
     }
 
-    /* PANTALLA LOGIN */
-    .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(circle at center, #1e1b4b 0%, #0b0f19 100%); padding: 20px; }
-    .app-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; width: 100%; max-width: 480px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7); }
+    /* LOGO CONFIGURABLE */
+    .app-logo { max-height: 60px; max-width: 220px; object-fit: contain; margin-bottom: 12px; }
+
+    /* LOGIN */
+    .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(circle at center, #1e293b 0%, #070a12 100%); padding: 20px; }
+    .app-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; width: 100%; max-width: 480px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8); }
     
-    .brand-icon { font-size: 48px; color: var(--primary); margin-bottom: 10px; }
-    .brand-title { font-size: 24px; font-weight: 800; color: #fff; }
-    .brand-sub { font-size: 13px; color: #94a3b8; margin-bottom: 20px; }
+    .method-tabs { display: flex; background: var(--bg-input); padding: 4px; border-radius: 12px; margin: 18px 0; gap: 4px; border: 1px solid var(--border-color); }
+    .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
 
-    .method-tabs { display: flex; background: var(--bg-input); padding: 4px; border-radius: 12px; margin-bottom: 20px; gap: 4px; border: 1px solid var(--border-color); }
-    .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; font-weight: 700; font-size: 11px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-    .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+    .input-group { text-align: left; margin-bottom: 12px; }
+    .input-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
+    .input-group input { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: #fff; font-size: 13px; outline: none; }
 
-    .mac-box { background: rgba(99, 102, 241, 0.1); border: 1px dashed var(--primary); border-radius: 12px; padding: 10px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
-    .mac-label { font-size: 10px; color: #a5b4fc; font-weight: 800; text-transform: uppercase; }
-    .mac-val { font-size: 13px; font-weight: bold; font-family: monospace; }
+    .btn-submit { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; border-radius: 10px; color: #fff; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
 
-    .input-group { text-align: left; margin-bottom: 14px; }
-    .input-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
-    .input-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-input); color: #fff; font-size: 13px; outline: none; transition: border 0.2s; }
-    .input-group input:focus { border-color: var(--primary); }
+    .status-box { margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 12px; text-align: center; }
+    .status-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .status-success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
 
-    .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; border-radius: 12px; color: #fff; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 8px; }
-    .btn-submit:hover { transform: translateY(-2px); }
+    /* NAVBAR GENERAL */
+    .top-menu { background: #0f172a; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+    .top-menu .nav-left { display: flex; align-items: center; gap: 15px; }
+    .top-menu .nav-right { display: flex; align-items: center; gap: 10px; }
+    .btn-nav { background: #1e293b; border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; }
+    .btn-nav:hover { background: var(--primary); }
 
-    .status-box { margin-top: 15px; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 600; text-align: center; word-break: break-word; }
-    .status-error { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
-    .status-success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    /* DASHBOARD PRINCIPAL */
+    .dashboard-container { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e293b 0%, #070a12 100%); }
+    .grid-main { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; padding: 40px; flex: 1; align-content: center; }
+    .tile-card { border-radius: 20px; padding: 35px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
+    .tile-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+    .tile-card i { font-size: 50px; margin-bottom: 15px; }
+    .tile-card h2 { font-size: 22px; font-weight: 800; }
 
-    /* DASHBOARD SMARTERS / IBO */
-    .dashboard-container { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e1b4b 0%, #0b0f19 100%); padding: 30px; }
-    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
+    /* VISTA DE CATEGORÍAS (CARPETAS SMARTERS PRO) */
+    .categories-view { flex: 1; padding: 30px; overflow-y: auto; }
+    .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 20px; }
+    .folder-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border-color); padding: 20px; border-radius: 14px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
+    .folder-card:hover { background: var(--primary); transform: scale(1.02); }
+    .folder-card i { font-size: 24px; color: #60a5fa; }
+    .folder-card:hover i { color: #fff; }
+    .folder-title { font-size: 13px; font-weight: 700; text-transform: uppercase; }
 
-    .grid-smarters { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; flex: 1; max-height: 65vh; }
-    .tile-card { border-radius: 24px; padding: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s; }
-    .tile-card:hover { transform: translateY(-5px); }
-    .tile-card i { font-size: 60px; margin-bottom: 18px; }
-    .tile-card h2 { font-size: 24px; font-weight: 900; }
-
-    .tile-live { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); }
-    .tile-movies { background: linear-gradient(135deg, #ec4899 0%, #e11d48 100%); }
-    .tile-series { background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); }
-
-    /* PLAYER VIEW */
-    .player-view { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: #000; position: fixed; top: 0; left: 0; z-index: 9999; }
-    .player-nav { padding: 14px 24px; background: #0f172a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
-    .btn-back { background: #ef4444; border: none; color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; }
-
-    .content-body { display: flex; flex: 1; overflow: hidden; }
-    .sidebar-categories { width: 340px; background: #0f172a; padding: 18px; display: flex; flex-direction: column; border-right: 1px solid #1e293b; }
-    .search-box { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #090d16; color: #fff; margin-bottom: 14px; outline: none; }
+    /* REPRODUCTOR Y LISTA DE CANALES */
+    .player-view { display: flex; flex: 1; height: calc(100vh - 61px); overflow: hidden; }
+    .sidebar-channels { width: 320px; background: #0f172a; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 15px; }
+    .search-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #070a12; color: #fff; margin-bottom: 12px; outline: none; font-size: 12px; }
     
-    .list-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .item-card { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid transparent; }
-    .item-card:hover, .item-card.active { background: var(--primary); border-color: rgba(255,255,255,0.2); }
-    .item-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .channel-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .channel-item { padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; border: 1px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .channel-item:hover, .channel-item.active { background: var(--primary); border-color: rgba(255,255,255,0.3); }
 
-    .video-area { flex: 1; display: flex; justify-content: center; align-items: center; background: #000; }
-    video { width: 100%; height: 100%; max-height: 88vh; }
+    .video-container { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative; }
+    video { width: 100%; height: 100%; max-height: 90vh; }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA LOGIN UNIVERSAL -->
+  <!-- PANTALLA LOGIN -->
   <div id="loginScreen" class="login-wrapper">
     <div class="app-card">
-      <div class="brand-icon"><i class="fa-solid fa-tv"></i></div>
-      <h1 class="brand-title">Don Streaming IPTV</h1>
-      <p class="brand-sub">Reproductor Web Multipanel Universal</p>
+      <img id="imgLoginLogo" src="https://via.placeholder.com/180x60?text=Don+Streaming" class="app-logo" alt="Logo">
+      <p style="font-size:12px; color:#94a3b8;">Plataforma Web IPTV Professional</p>
 
-      <!-- MAC DEL DISPOSITIVO -->
-      <div class="mac-box">
-        <div>
-          <div class="mac-label">Dirección MAC del Dispositivo</div>
-          <div id="displayMac" class="mac-val">DS:85:A7:B6:54:9A</div>
-        </div>
-        <button onclick="copiarMac()" style="background:var(--primary); border:none; color:#fff; padding:6px 12px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer;">Copiar</button>
-      </div>
-
-      <!-- SELECCIÓN DE MÉTODO -->
       <div class="method-tabs">
         <button id="tabXtream" class="tab-btn active" onclick="switchTab('xtream')">🔑 Xtream Codes</button>
         <button id="tabM3u" class="tab-btn" onclick="switchTab('m3u')">🏷️ URL M3U</button>
-        <button id="tabMac" class="tab-btn" onclick="switchTab('mac')">🖥️ Activar MAC</button>
+        <button id="tabConfig" class="tab-btn" onclick="switchTab('config')">⚙️ Logo / Marca</button>
       </div>
 
-      <!-- FORMULARIO 1: XTREAM CODES (CUALQUIER PANEL) -->
       <div id="formXtream">
-        <div class="input-group">
-          <label>URL del Servidor / Panel (DNS)</label>
-          <input type="text" id="xtreamHost" placeholder="Ej: http://mi-panel.com:8080">
-        </div>
-        <div class="input-group">
-          <label>Usuario IPTV</label>
-          <input type="text" id="xtreamUser" placeholder="Usuario">
-        </div>
-        <div class="input-group">
-          <label>Contraseña</label>
-          <input type="password" id="xtreamPass" placeholder="••••••••">
-        </div>
+        <div class="input-group"><label>DNS / URL Servidor</label><input type="text" id="xtreamHost" placeholder="http://servidor.com:8080"></div>
+        <div class="input-group"><label>Usuario</label><input type="text" id="xtreamUser" placeholder="Usuario"></div>
+        <div class="input-group"><label>Contraseña</label><input type="password" id="xtreamPass" placeholder="••••••••"></div>
       </div>
 
-      <!-- FORMULARIO 2: CUALQUIER LISTA M3U -->
       <div id="formM3u" class="hidden">
-        <div class="input-group">
-          <label>URL de la Lista M3U / M3U8</label>
-          <input type="text" id="m3uUrl" placeholder="https://mi-servidor.com/get.php?username=...&type=m3u">
-        </div>
+        <div class="input-group"><label>URL Lista M3U</label><input type="text" id="m3uUrl" placeholder="http://servidor.com/get.php?username=...&type=m3u"></div>
       </div>
 
-      <!-- FORMULARIO 3: ACTIVAR MAC -->
-      <div id="formMac" class="hidden">
-        <div class="input-group">
-          <label>Nombre del Cliente</label>
-          <input type="text" id="clientName" placeholder="Nombre completo">
-        </div>
+      <div id="formConfig" class="hidden">
+        <div class="input-group"><label>URL Imagen del Logo</label><input type="text" id="customLogoUrl" placeholder="https://midominio.com/logo.png"></div>
+        <button class="btn-submit" onclick="guardarLogo()">💾 Guardar Logo</button>
       </div>
 
-      <button id="btnConnect" class="btn-submit" onclick="conectarServidor()">🚀 Cargar Panel IPTV</button>
+      <button id="btnConnect" class="btn-submit" onclick="conectarServidor()">🚀 Cargar IPTV</button>
       <div id="statusMsg" class="status-box hidden"></div>
     </div>
   </div>
 
-  <!-- DASHBOARD PRINCIPAL -->
+  <!-- PANTALLA DASHBOARD PRINCIPAL -->
   <div id="dashScreen" class="dashboard-container hidden">
-    <header class="dash-header">
-      <h2><i class="fa-solid fa-tv" style="color:var(--primary)"></i> Don Streaming IPTV</h2>
-      <div>
-        <span id="lblUser" style="color:#38bdf8; font-size:12px; margin-right:15px; font-weight:bold;"></span>
-        <button class="btn-back" onclick="cerrarSesion()">Cerrar Sesión</button>
+    <nav class="top-menu">
+      <div class="nav-left">
+        <img class="app-logo main-logo" src="" alt="Logo" style="height:35px; margin:0;">
       </div>
-    </header>
+      <div class="nav-right">
+        <button class="btn-nav" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
+      </div>
+    </nav>
 
-    <div class="grid-smarters">
-      <div class="tile-card tile-live" onclick="abrirSeccion('live')">
+    <div class="grid-main">
+      <div class="tile-card" style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);" onclick="cargarCategorias('live')">
         <i class="fa-solid fa-tv"></i>
         <h2>TV EN VIVO</h2>
-        <p id="countLive">0 Canales</p>
+        <p id="countLive">0 Categorías</p>
       </div>
-      <div class="tile-card tile-movies" onclick="abrirSeccion('movies')">
+      <div class="tile-card" style="background: linear-gradient(135deg, #ec4899 0%, #e11d48 100%);" onclick="cargarCategorias('movies')">
         <i class="fa-solid fa-film"></i>
         <h2>PELÍCULAS</h2>
-        <p id="countMovies">0 Títulos</p>
+        <p id="countMovies">0 Categorías</p>
       </div>
-      <div class="tile-card tile-series" onclick="abrirSeccion('series')">
+      <div class="tile-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);" onclick="cargarCategorias('series')">
         <i class="fa-solid fa-clapperboard"></i>
         <h2>SERIES</h2>
-        <p id="countSeries">0 Series</p>
+        <p id="countSeries">0 Categorías</p>
       </div>
     </div>
   </div>
 
-  <!-- REPRODUCTOR WEB -->
-  <div id="playerScreen" class="player-view hidden">
-    <div class="player-nav">
-      <h3 id="playerSectionTitle">📺 Contenido</h3>
-      <button class="btn-back" onclick="volverAlDash()">⬅️ Volver</button>
+  <!-- PANTALLA CARPETAS / CATEGORÍAS -->
+  <div id="categoriesScreen" class="dashboard-container hidden">
+    <nav class="top-menu">
+      <div class="nav-left">
+        <button class="btn-nav" onclick="irAlDash()"><i class="fa-solid fa-arrow-left"></i> Menú Principal</button>
+        <h3 id="catSectionTitle" style="font-size:15px;">Categorías</h3>
+      </div>
+      <div class="nav-right">
+        <input type="text" id="catSearch" class="search-input" style="margin:0; width:180px;" placeholder="🔍 Buscar categoría..." oninput="filtrarCategorias()">
+      </div>
+    </nav>
+
+    <div class="categories-view">
+      <div id="categoriesGrid" class="categories-grid"></div>
     </div>
-    <div class="content-body">
-      <aside class="sidebar-categories">
-        <input type="text" id="searchBox" class="search-box" placeholder="🔍 Buscar..." oninput="filtrarContenido()">
-        <div id="contentList" class="list-container"></div>
+  </div>
+
+  <!-- PANTALLA REPRODUCTOR -->
+  <div id="playerScreen" class="dashboard-container hidden">
+    <nav class="top-menu">
+      <div class="nav-left">
+        <button class="btn-nav" onclick="volverACategorias()"><i class="fa-solid fa-arrow-left"></i> Volver a Categorías</button>
+        <span id="currentCatName" style="font-size:13px; font-weight:bold; color:#60a5fa;"></span>
+      </div>
+      <div class="nav-right">
+        <img class="app-logo main-logo" src="" alt="Logo" style="height:30px; margin:0;">
+      </div>
+    </nav>
+
+    <div class="player-view">
+      <aside class="sidebar-channels">
+        <input type="text" id="channelSearch" class="search-input" placeholder="🔍 Buscar canal..." oninput="filtrarCanales()">
+        <div id="channelList" class="channel-list"></div>
       </aside>
-      <main class="video-area">
+      <main class="video-container">
         <video id="mainVideo" controls autoplay playsinline></video>
       </main>
     </div>
@@ -193,25 +187,38 @@
 
   <script>
     let activeMethod = 'xtream';
-    let globalData = { live: [], movies: [], series: [] };
+    let rawCategories = [];
+    let rawStreams = [];
     let currentMode = 'live';
+    let currentCategoryId = null;
     let hlsEngine = null;
 
     window.onload = function() {
-      let mac = localStorage.getItem('ds_mac_address');
-      if (!mac) {
-        mac = 'DS:' + Array.from({length: 5}, () => Math.floor(Math.random()*256).toString(16).padStart(2, '0').toUpperCase()).join(':');
-        localStorage.setItem('ds_mac_address', mac);
-      }
-      document.getElementById('displayMac').innerText = mac;
+      let logo = localStorage.getItem('ds_app_logo') || 'https://via.placeholder.com/180x60?text=Don+Streaming';
+      aplicarLogo(logo);
     };
+
+    function aplicarLogo(url) {
+      document.getElementById('imgLoginLogo').src = url;
+      document.querySelectorAll('.main-logo').forEach(img => img.src = url);
+      document.getElementById('customLogoUrl').value = url;
+    }
+
+    function guardarLogo() {
+      let url = document.getElementById('customLogoUrl').value.trim();
+      if(!url) url = 'https://via.placeholder.com/180x60?text=Don+Streaming';
+      localStorage.setItem('ds_app_logo', url);
+      aplicarLogo(url);
+      mostrarMsg('✅ Logo actualizado correctamente.', 'success');
+    }
 
     function switchTab(m) {
       activeMethod = m;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('formXtream').classList.add('hidden');
       document.getElementById('formM3u').classList.add('hidden');
-      document.getElementById('formMac').classList.add('hidden');
+      document.getElementById('formConfig').classList.add('hidden');
+      document.getElementById('btnConnect').classList.remove('hidden');
 
       if (m === 'xtream') {
         document.getElementById('tabXtream').classList.add('active');
@@ -219,184 +226,215 @@
       } else if (m === 'm3u') {
         document.getElementById('tabM3u').classList.add('active');
         document.getElementById('formM3u').classList.remove('hidden');
-      } else if (m === 'mac') {
-        document.getElementById('tabMac').classList.add('active');
-        document.getElementById('formMac').classList.remove('hidden');
+      } else if (m === 'config') {
+        document.getElementById('tabConfig').classList.add('active');
+        document.getElementById('formConfig').classList.remove('hidden');
+        document.getElementById('btnConnect').classList.add('hidden');
       }
     }
 
-    function copiarMac() {
-      navigator.clipboard.writeText(document.getElementById('displayMac').innerText);
-      mostrarMsg('📋 Dirección MAC copiada.', 'success');
-    }
-
-    // Petición multicanal con fallback de Proxies para saltar bloqueos CORS/HTTP
-    async function solicitarURL(targetUrl) {
+    async function fetchProxy(url) {
       const proxies = [
-        url => url, // Directo si el panel soporta HTTPS
-        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+        u => u,
+        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
       ];
-
-      for (let proxyFn of proxies) {
+      for (let p of proxies) {
         try {
-          let res = await fetch(proxyFn(targetUrl));
-          if (res.ok) {
-            let text = await res.text();
-            if (text) return text;
-          }
-        } catch (e) {}
+          let res = await fetch(p(url));
+          if (res.ok) return await res.text();
+        } catch(e) {}
       }
-      throw new Error('No se pudo establecer conexión con el servidor.');
+      throw new Error('Error de conexión');
     }
 
     async function conectarServidor() {
-      if (activeMethod === 'mac') {
-        const name = document.getElementById('clientName').value.trim();
-        if (!name) return mostrarMsg('Ingresa tu nombre.', 'error');
-        return mostrarMsg(`✅ Activación solicitada para MAC: ${document.getElementById('displayMac').innerText}`, 'success');
-      }
-
       if (activeMethod === 'xtream') {
         let host = document.getElementById('xtreamHost').value.trim();
         const user = document.getElementById('xtreamUser').value.trim();
         const pass = document.getElementById('xtreamPass').value.trim();
 
-        if (!host || !user || !pass) return mostrarMsg('Ingresa Servidor, Usuario y Contraseña.', 'error');
-
-        if (!host.startsWith('http://') && !host.startsWith('https://')) host = 'http://' + host;
+        if (!host || !user || !pass) return mostrarMsg('Ingresa Servidor, Usuario y Clave.', 'error');
+        if (!host.startsWith('http')) host = 'http://' + host;
         if (host.endsWith('/')) host = host.slice(0, -1);
 
-        mostrarMsg('⏳ Autenticando con el panel IPTV...', 'success');
-
-        const apiUrl = `${host}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
+        mostrarMsg('⏳ Cargando carpetas y lista...', 'success');
 
         try {
-          const rawResponse = await solicitarURL(apiUrl);
-          const data = JSON.parse(rawResponse);
+          // Obtener categorías y contenidos
+          const catUrl = `${host}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`;
+          const streamUrl = `${host}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
 
-          if (Array.isArray(data) && data.length > 0) {
-            globalData.live = data.map(item => ({
-              name: item.name,
-              url: `${host}/live/${user}/${pass}/${item.stream_id}.m3u8`
-            }));
+          const rawCat = await fetchProxy(catUrl);
+          const rawStr = await fetchProxy(streamUrl);
 
-            document.getElementById('countLive').innerText = `${globalData.live.length} Canales`;
-            document.getElementById('countMovies').innerText = `0 Películas`;
-            document.getElementById('countSeries').innerText = `0 Series`;
-            document.getElementById('lblUser').innerText = `Usuario: ${user}`;
+          rawCategories = JSON.parse(rawCat);
+          const streams = JSON.parse(rawStr);
 
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashScreen').classList.remove('hidden');
-            return;
-          } else {
-            mostrarMsg('❌ Usuario o clave incorrectos, o usuario vencido.', 'error');
-          }
-        } catch (e) {
-          mostrarMsg('❌ Error al conectar con el servidor Xtream Codes. Revisa la URL.', 'error');
+          rawStreams = streams.map(s => ({
+            id: s.stream_id,
+            name: s.name,
+            category_id: s.category_id,
+            url: `${host}/live/${user}/${pass}/${s.stream_id}.m3u8`
+          }));
+
+          document.getElementById('countLive').innerText = `${rawCategories.length} Carpetas`;
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('dashScreen').classList.remove('hidden');
+        } catch(e) {
+          mostrarMsg('❌ No se pudo conectar al panel Xtream.', 'error');
         }
-      }
-
-      if (activeMethod === 'm3u') {
+      } else if (activeMethod === 'm3u') {
         const url = document.getElementById('m3uUrl').value.trim();
-        if (!url) return mostrarMsg('Ingresa la URL de la lista M3U.', 'error');
+        if (!url) return mostrarMsg('Ingresa la URL M3U.', 'error');
 
-        mostrarMsg('⏳ Descargando y procesando la lista...', 'success');
+        mostrarMsg('⏳ Procesando M3U por categorías...', 'success');
 
         try {
-          const rawM3u = await solicitarURL(url);
-          const lines = rawM3u.split('\n');
-          let live = [], movies = [], series = [];
-          let cur = null;
+          const m3uText = await fetchProxy(url);
+          const lines = m3uText.split('\n');
+          
+          let catsMap = {};
+          let streams = [];
+          let currentCat = 'GENERAL';
+          let currentName = '';
 
           for (let line of lines) {
             line = line.trim();
             if (line.startsWith('#EXTINF:')) {
+              const groupMatch = line.match(/group-title="([^"]+)"/);
+              currentCat = groupMatch ? groupMatch[1].toUpperCase() : 'GENERAL';
               const nameMatch = line.match(/,(.+)$/);
-              cur = { name: nameMatch ? nameMatch[1].trim() : 'Canal sin nombre' };
-            } else if (line.startsWith('http') && cur) {
-              cur.url = line;
-              if (line.endsWith('.mp4') || line.endsWith('.mkv')) movies.push(cur);
-              else live.push(cur);
-              cur = null;
+              currentName = nameMatch ? nameMatch[1].trim() : 'Canal';
+              
+              if (!catsMap[currentCat]) catsMap[currentCat] = { category_id: currentCat, category_name: currentCat };
+            } else if (line.startsWith('http')) {
+              streams.push({
+                id: Math.random(),
+                name: currentName,
+                category_id: currentCat,
+                url: line
+              });
             }
           }
 
-          globalData = { live, movies, series };
-          document.getElementById('countLive').innerText = `${live.length} Canales`;
-          document.getElementById('countMovies').innerText = `${movies.length} Películas`;
-          document.getElementById('countSeries').innerText = `${series.length} Series`;
-          document.getElementById('lblUser').innerText = `Lista M3U Cargada`;
+          rawCategories = Object.values(catsMap);
+          rawStreams = streams;
 
+          document.getElementById('countLive').innerText = `${rawCategories.length} Carpetas`;
           document.getElementById('loginScreen').classList.add('hidden');
           document.getElementById('dashScreen').classList.remove('hidden');
-        } catch (e) {
-          mostrarMsg('❌ No se pudo descargar la lista M3U. Revisa la URL.', 'error');
+        } catch(e) {
+          mostrarMsg('❌ No se pudo descargar la lista M3U.', 'error');
         }
       }
     }
 
-    function abrirSeccion(m) {
-      currentMode = m;
+    function cargarCategorias(mode) {
+      currentMode = mode;
       document.getElementById('dashScreen').classList.add('hidden');
-      document.getElementById('playerScreen').classList.remove('hidden');
-      renderLista(globalData[m]);
+      document.getElementById('categoriesScreen').classList.remove('hidden');
+      renderCategorias(rawCategories);
     }
 
-    function renderLista(arr) {
-      const c = document.getElementById('contentList');
-      c.innerHTML = '';
-      if (!arr || arr.length === 0) { c.innerHTML = '<p style="padding:15px; font-size:12px; color:#94a3b8;">Sin contenido.</p>'; return; }
+    function renderCategorias(cats) {
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = '';
 
-      arr.slice(0, 300).forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'item-card';
-        div.innerHTML = `<span class="item-title">${item.name}</span>`;
-        div.onclick = () => reproducir(item, div);
-        c.appendChild(div);
+      if(!cats || cats.length === 0) {
+        grid.innerHTML = '<p style="color:#94a3b8;">No se encontraron categorías.</p>';
+        return;
+      }
+
+      cats.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'folder-card';
+        card.innerHTML = `<i class="fa-solid fa-folder"></i> <span class="folder-title">${c.category_name}</span>`;
+        card.onclick = () => abrirCanalesDeCategoria(c.category_id, c.category_name);
+        grid.appendChild(card);
       });
     }
 
-    function reproducir(item, el) {
-      document.querySelectorAll('.item-card').forEach(e => e.classList.remove('active'));
-      if (el) el.classList.add('active');
+    function abrirCanalesDeCategoria(catId, catName) {
+      currentCategoryId = catId;
+      document.getElementById('currentCatName').innerText = catName;
+      document.getElementById('categoriesScreen').classList.add('hidden');
+      document.getElementById('playerScreen').classList.remove('hidden');
 
-      const v = document.getElementById('mainVideo');
+      const canales = rawStreams.filter(s => String(s.category_id) === String(catId));
+      renderCanales(canales);
+    }
+
+    function renderCanales(canales) {
+      const list = document.getElementById('channelList');
+      list.innerHTML = '';
+
+      if (!canales || canales.length === 0) {
+        list.innerHTML = '<p style="padding:10px; font-size:11px; color:#94a3b8;">Sin canales en esta carpeta.</p>';
+        return;
+      }
+
+      canales.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'channel-item';
+        div.innerText = item.name;
+        div.onclick = () => reproducirCanal(item, div);
+        list.appendChild(div);
+      });
+    }
+
+    function reproducirCanal(item, el) {
+      document.querySelectorAll('.channel-item').forEach(d => d.classList.remove('active'));
+      if(el) el.classList.add('active');
+
+      const video = document.getElementById('mainVideo');
       if (hlsEngine) hlsEngine.destroy();
 
       const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(item.url)}`;
 
-      if (item.url.includes('.m3u8') && Hls.isSupported()) {
+      if (Hls.isSupported()) {
         hlsEngine = new Hls({ enableWorker: true });
         hlsEngine.loadSource(proxiedUrl);
-        hlsEngine.attachMedia(v);
-        hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => v.play().catch(() => {}));
+        hlsEngine.attachMedia(video);
+        hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
       } else {
-        v.src = proxiedUrl;
-        v.play().catch(() => {});
+        video.src = proxiedUrl;
+        video.play().catch(() => {});
       }
     }
 
-    function volverAlDash() {
-      if (hlsEngine) hlsEngine.destroy();
-      document.getElementById('playerScreen').classList.add('hidden');
+    function irAlDash() {
+      document.getElementById('categoriesScreen').classList.add('hidden');
       document.getElementById('dashScreen').classList.remove('hidden');
     }
 
+    function volverACategorias() {
+      if (hlsEngine) hlsEngine.destroy();
+      document.getElementById('playerScreen').classList.add('hidden');
+      document.getElementById('categoriesScreen').classList.remove('hidden');
+    }
+
     function cerrarSesion() {
+      if (hlsEngine) hlsEngine.destroy();
       document.getElementById('dashScreen').classList.add('hidden');
       document.getElementById('loginScreen').classList.remove('hidden');
     }
 
-    function filtrarContenido() {
-      const q = document.getElementById('searchBox').value.toLowerCase();
-      renderLista(globalData[currentMode].filter(i => i.name.toLowerCase().includes(q)));
+    function filtrarCategorias() {
+      const q = document.getElementById('catSearch').value.toLowerCase();
+      renderCategorias(rawCategories.filter(c => c.category_name.toLowerCase().includes(q)));
     }
 
-    function mostrarMsg(txt, t) {
+    function filtrarCanales() {
+      const q = document.getElementById('channelSearch').value.toLowerCase();
+      const canales = rawStreams.filter(s => String(s.category_id) === String(currentCategoryId) && s.name.toLowerCase().includes(q));
+      renderCanales(canales);
+    }
+
+    function mostrarMsg(txt, type) {
       const b = document.getElementById('statusMsg');
       b.innerText = txt;
-      b.className = `status-box ${t === 'success' ? 'status-success' : 'status-error'}`;
+      b.className = `status-box ${type === 'success' ? 'status-success' : 'status-error'}`;
       b.classList.remove('hidden');
     }
   </script>
