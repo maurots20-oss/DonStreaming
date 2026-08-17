@@ -14,10 +14,16 @@
     body { background-color: #0b0f19; color: #ffffff; min-height: 100vh; overflow-x: hidden; }
     .hidden { display: none !important; }
 
+    /* LOGO BRANDING */
+    .brand-logo { max-height: 60px; max-width: 220px; object-fit: contain; margin-bottom: 12px; }
+    .brand-logo-top { max-height: 40px; max-width: 160px; object-fit: contain; }
+
     /* LOGIN */
     .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%); }
     .login-card { background: #151c2c; border: 1px solid #2a354c; border-radius: 16px; padding: 32px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
-    .logo-box h2 { font-size: 24px; color: #3b82f6; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 20px; }
+    
+    .logo-box { margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .logo-box h2 { font-size: 24px; color: #3b82f6; font-weight: 800; letter-spacing: 1.5px; }
 
     .input-group { text-align: left; margin-bottom: 16px; }
     .input-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
@@ -31,7 +37,7 @@
     .alert-info { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid #3b82f6; }
 
     /* DASHBOARD */
-    .top-bar { background: #151c2c; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a354c; }
+    .top-bar { background: #151c2c; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a354c; }
     .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 30px; }
     .card-tile { background: #151c2c; border-radius: 14px; padding: 30px; text-align: center; cursor: pointer; border: 1px solid #2a354c; transition: transform 0.2s; }
     .card-tile:hover { border-color: #3b82f6; background: #1e293b; transform: translateY(-3px); }
@@ -56,6 +62,8 @@
   <div id="screenLogin" class="login-wrapper">
     <div class="login-card">
       <div class="logo-box">
+        <!-- REEMPLAZA LA URL DEL LOGO POR LA TUYA O SUBE UN 'logo.png' A GITHUB -->
+        <img id="appLogo" src="logo.png" alt="Don Streaming" class="brand-logo" onerror="this.style.display='none'">
         <h2>DON STREAMING</h2>
       </div>
 
@@ -90,7 +98,10 @@
   <!-- DASHBOARD PRINCIPAL -->
   <div id="screenDash" class="hidden">
     <div class="top-bar">
-      <h2>DON STREAMING</h2>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="logo.png" alt="Logo" class="brand-logo-top" onerror="this.style.display='none'">
+        <h2 style="font-size:18px;">DON STREAMING</h2>
+      </div>
       <button onclick="cerrarSesion()" style="background:#ef4444; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">Cerrar Sesión</button>
     </div>
     <div class="grid-container">
@@ -103,11 +114,6 @@
         <i class="fa-solid fa-film"></i>
         <h3>PELÍCULAS</h3>
         <p id="txtVod" style="margin-top:8px; color:#94a3b8; font-size:13px;">Cargando...</p>
-      </div>
-      <div class="card-tile" onclick="cargarSeccion('SERIES')">
-        <i class="fa-solid fa-clapperboard"></i>
-        <h3>SERIES</h3>
-        <p id="txtSeries" style="margin-top:8px; color:#94a3b8; font-size:13px;">Cargando...</p>
       </div>
     </div>
   </div>
@@ -137,11 +143,7 @@
 
   <script>
     let session = { host: '', user: '', pass: '' };
-    let appData = { 
-      liveCats: [], liveItems: [],
-      vodCats: [], vodItems: [],
-      seriesCats: [], seriesItems: []
-    };
+    let appData = { liveCats: [], liveItems: [], vodCats: [], vodItems: [] };
     let currentType = 'LIVE';
     let playerInstance = null;
 
@@ -160,7 +162,7 @@
     async function apiFetch(targetUrl) {
       const proxyEndpoint = `/api/proxy?url=${encodeURIComponent(targetUrl)}`;
       const res = await fetch(proxyEndpoint);
-      if (!res.ok) throw new Error('Error al conectar con el servidor IPTV');
+      if (!res.ok) throw new Error('Error al conectar');
       return await res.json();
     }
 
@@ -178,7 +180,7 @@
       session = { host, user, pass };
 
       try {
-        mostrarAlerta('⏳ Autenticando con el servidor...', 'info');
+        mostrarAlerta('⏳ Conectando con el servidor...', 'info');
         let authUrl = `${host}/player_api.php?username=${user}&password=${pass}`;
         let authData = await apiFetch(authUrl);
 
@@ -186,9 +188,8 @@
           return mostrarAlerta('❌ Usuario o clave incorrectos.', 'err');
         }
 
-        mostrarAlerta('⏳ Cargando Canales, Películas y Series...', 'info');
+        mostrarAlerta('⏳ Cargando catálogo...', 'info');
 
-        // Peticiones paralelas para mayor velocidad
         let [liveCats, liveItems, vodCats, vodItems] = await Promise.all([
           apiFetch(`${host}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`).catch(()=>[]),
           apiFetch(`${host}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`).catch(()=>[]),
@@ -203,7 +204,6 @@
 
         document.getElementById('txtLive').innerText = `${appData.liveItems.length} Canales`;
         document.getElementById('txtVod').innerText = `${appData.vodItems.length} Películas`;
-        document.getElementById('txtSeries').innerText = `Contenido On Demand`;
 
         irA('screenDash');
 
@@ -245,12 +245,12 @@
       filtered.forEach(ch => {
         let ext = ch.container_extension || (currentType === 'LIVE' ? 'm3u8' : 'mp4');
         let streamType = currentType === 'LIVE' ? 'live' : 'movie';
-        let streamUrl = `${session.host}/${streamType}/${session.user}/${session.pass}/${ch.stream_id || ch.vod_id}.${ext}`;
+        let directUrl = `${session.host}/${streamType}/${session.user}/${session.pass}/${ch.stream_id || ch.vod_id}.${ext}`;
 
         let btn = document.createElement('div');
         btn.className = 'channel-item';
         btn.innerHTML = `<i class="fa-solid ${currentType === 'LIVE' ? 'fa-play-circle' : 'fa-film'}" style="color:#3b82f6;"></i> <span>${ch.name}</span>`;
-        btn.onclick = () => reproducir(streamUrl, btn, ext);
+        btn.onclick = () => reproducir(directUrl, btn, ext);
         box.appendChild(btn);
       });
     }
@@ -260,27 +260,22 @@
       if (element) element.classList.add('active');
 
       let video = document.getElementById('mainVideo');
-      let proxiedStream = `/api/proxy?url=${encodeURIComponent(streamUrl)}`;
 
       if (playerInstance) {
         playerInstance.destroy();
         playerInstance = null;
       }
 
-      // Si es película/serie (MP4/MKV) o navegador Safari/iOS
+      // Conexión de video directa para evitar el corte por timeout de Vercel
       if (extension === 'mp4' || extension === 'mkv' || !Hls.isSupported()) {
-        video.src = proxiedStream;
-        video.play().catch(e => console.log('Autoplay bloqueado:', e));
+        video.src = streamUrl;
+        video.play().catch(e => console.log('Error de reproducción:', e));
       } else {
-        // Para Canales en Vivo M3U8
-        playerInstance = new Hls({
-          enableWorker: true,
-          lowLatencyMode: true
-        });
-        playerInstance.loadSource(proxiedStream);
+        playerInstance = new Hls({ enableWorker: true });
+        playerInstance.loadSource(streamUrl);
         playerInstance.attachMedia(video);
         playerInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play().catch(e => console.log('Autoplay bloqueado:', e));
+          video.play().catch(e => console.log('Error de reproducción:', e));
         });
       }
     }
