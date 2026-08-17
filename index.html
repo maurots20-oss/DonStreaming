@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Don Streaming Player</title>
 
+  <!-- Motores de Video -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -13,30 +14,30 @@
     body { background-color: #0b0f19; color: #ffffff; min-height: 100vh; overflow-x: hidden; }
     .hidden { display: none !important; }
 
+    /* LOGIN */
     .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%); }
     .login-card { background: #151c2c; border: 1px solid #2a354c; border-radius: 16px; padding: 32px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
-    
-    .logo-box { margin-bottom: 24px; display: flex; justify-content: center; align-items: center; }
-    .logo-box h2 { font-size: 24px; color: #3b82f6; font-weight: 800; letter-spacing: 1.5px; }
+    .logo-box h2 { font-size: 24px; color: #3b82f6; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 20px; }
 
     .input-group { text-align: left; margin-bottom: 16px; }
     .input-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
     .input-group input, .input-group select { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #2a354c; background: #0b0f19; color: #fff; font-size: 14px; outline: none; }
-    .input-group input:focus, .input-group select:focus { border-color: #3b82f6; }
 
     .btn-submit { width: 100%; padding: 14px; background: #2563eb; border: none; border-radius: 8px; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 10px; }
     .btn-submit:hover { background: #1d4ed8; }
 
-    .alert { margin-top: 18px; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; word-break: break-word; }
+    .alert { margin-top: 18px; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; }
     .alert-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid #ef4444; }
     .alert-info { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid #3b82f6; }
 
+    /* DASHBOARD */
     .top-bar { background: #151c2c; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a354c; }
-    .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; padding: 30px; }
-    .card-tile { background: #151c2c; border-radius: 14px; padding: 30px; text-align: center; cursor: pointer; border: 1px solid #2a354c; }
-    .card-tile:hover { border-color: #3b82f6; background: #1e293b; }
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 30px; }
+    .card-tile { background: #151c2c; border-radius: 14px; padding: 30px; text-align: center; cursor: pointer; border: 1px solid #2a354c; transition: transform 0.2s; }
+    .card-tile:hover { border-color: #3b82f6; background: #1e293b; transform: translateY(-3px); }
     .card-tile i { font-size: 42px; margin-bottom: 12px; color: #3b82f6; }
 
+    /* LISTAS Y REPRODUCTOR */
     .folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; padding: 24px; }
     .folder-card { background: #151c2c; padding: 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1px solid #2a354c; font-size: 13px; font-weight: 600; }
     .folder-card:hover { background: #2563eb; }
@@ -45,34 +46,31 @@
     .channel-list { width: 340px; background: #151c2c; padding: 12px; overflow-y: auto; border-right: 1px solid #2a354c; }
     .channel-item { padding: 12px 14px; background: #0b0f19; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px; }
     .channel-item:hover, .channel-item.active { background: #2563eb; }
-    .video-view { flex: 1; background: #000; display: flex; justify-content: center; align-items: center; }
-    video { width: 100%; height: 100%; object-fit: contain; }
+    .video-view { flex: 1; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    video { width: 100%; height: 100%; max-height: 90vh; object-fit: contain; }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <!-- PANTALLA LOGIN -->
   <div id="screenLogin" class="login-wrapper">
     <div class="login-card">
       <div class="logo-box">
         <h2>DON STREAMING</h2>
       </div>
 
-      <!-- SELECTOR DE SERVIDORES / PANELES -->
       <div class="input-group">
-        <label>SELECCIONA TU SERVICIO / PANEL</label>
+        <label>PANEL / SERVIDOR</label>
         <select id="selectServer" onchange="toggleCustomServer()">
           <option value="http://flowpremium.digital:2087">Servidor Flow Premium</option>
           <option value="http://zona593latin.top">Servidor Zona 593 Latin</option>
-          <!-- Puedes agregar más servidores/paneles aquí -->
-          <option value="CUSTOM">-- Ingresar otro servidor manualmente --</option>
+          <option value="CUSTOM">-- Personalizado --</option>
         </select>
       </div>
 
-      <!-- CAMPO PARA SERVIDOR PERSONALIZADO (SI SE ELIGE MANUAL) -->
       <div class="input-group hidden" id="customServerGroup">
-        <label>URL DEL SERVIDOR / DNS</label>
-        <input type="text" id="inputCustomHost" placeholder="http://tu-servidor.com:8080">
+        <label>URL DEL SERVIDOR</label>
+        <input type="text" id="inputCustomHost" placeholder="http://servidor.com:8080">
       </div>
 
       <div class="input-group">
@@ -89,31 +87,41 @@
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- DASHBOARD PRINCIPAL -->
   <div id="screenDash" class="hidden">
     <div class="top-bar">
-      <div class="logo-box" style="margin:0;"><h2>DON STREAMING</h2></div>
+      <h2>DON STREAMING</h2>
       <button onclick="cerrarSesion()" style="background:#ef4444; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">Cerrar Sesión</button>
     </div>
     <div class="grid-container">
-      <div class="card-tile" onclick="mostrarCarpetas()">
+      <div class="card-tile" onclick="cargarSeccion('LIVE')">
         <i class="fa-solid fa-tv"></i>
         <h3>CANALES EN VIVO</h3>
-        <p id="txtTotalCarpetas" style="margin-top:8px; color:#94a3b8; font-size:13px;">Cargando categorías...</p>
+        <p id="txtLive" style="margin-top:8px; color:#94a3b8; font-size:13px;">Cargando...</p>
+      </div>
+      <div class="card-tile" onclick="cargarSeccion('VOD')">
+        <i class="fa-solid fa-film"></i>
+        <h3>PELÍCULAS</h3>
+        <p id="txtVod" style="margin-top:8px; color:#94a3b8; font-size:13px;">Cargando...</p>
+      </div>
+      <div class="card-tile" onclick="cargarSeccion('SERIES')">
+        <i class="fa-solid fa-clapperboard"></i>
+        <h3>SERIES</h3>
+        <p id="txtSeries" style="margin-top:8px; color:#94a3b8; font-size:13px;">Cargando...</p>
       </div>
     </div>
   </div>
 
-  <!-- CARPETAS -->
+  <!-- CARPETAS DE CATEGORÍAS -->
   <div id="screenFolders" class="hidden">
     <div class="top-bar">
       <button onclick="irA('screenDash')" style="background:#2a354c; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">⬅ Inicio</button>
-      <h4>CATEGORÍAS DE TELEVISIÓN</h4>
+      <h4 id="categoryHeader">CATEGORÍAS</h4>
     </div>
     <div id="foldersBox" class="folders-grid"></div>
   </div>
 
-  <!-- REPRODUCTOR -->
+  <!-- REPRODUCTOR DE VIDEO -->
   <div id="screenPlayer" class="hidden">
     <div class="top-bar">
       <button onclick="irA('screenFolders')" style="background:#2a354c; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">⬅ Categorías</button>
@@ -122,24 +130,24 @@
     <div class="player-container">
       <div class="channel-list" id="channelsBox"></div>
       <div class="video-view">
-        <video id="mainVideo" controls autoplay></video>
+        <video id="mainVideo" controls autoplay style="width:100%; height:100%;"></video>
       </div>
     </div>
   </div>
 
   <script>
     let session = { host: '', user: '', pass: '' };
-    let appData = { categories: [], channels: [] };
+    let appData = { 
+      liveCats: [], liveItems: [],
+      vodCats: [], vodItems: [],
+      seriesCats: [], seriesItems: []
+    };
+    let currentType = 'LIVE';
     let playerInstance = null;
 
     function toggleCustomServer() {
       let select = document.getElementById('selectServer').value;
-      let customGroup = document.getElementById('customServerGroup');
-      if (select === 'CUSTOM') {
-        customGroup.classList.remove('hidden');
-      } else {
-        customGroup.classList.add('hidden');
-      }
+      document.getElementById('customServerGroup').classList.toggle('hidden', select !== 'CUSTOM');
     }
 
     function mostrarAlerta(msg, type) {
@@ -162,9 +170,7 @@
       let user = document.getElementById('inputUser').value.trim();
       let pass = document.getElementById('inputPass').value.trim();
 
-      if (!host || !user || !pass) {
-        return mostrarAlerta('Por favor completa todos los datos para ingresar.', 'err');
-      }
+      if (!host || !user || !pass) return mostrarAlerta('Ingresa tus credenciales.', 'err');
 
       while (host.endsWith('/')) host = host.slice(0, -1);
       if (!host.startsWith('http://') && !host.startsWith('https://')) host = 'http://' + host;
@@ -172,83 +178,110 @@
       session = { host, user, pass };
 
       try {
-        mostrarAlerta('⏳ Conectando con Don Streaming...', 'info');
-
+        mostrarAlerta('⏳ Autenticando con el servidor...', 'info');
         let authUrl = `${host}/player_api.php?username=${user}&password=${pass}`;
         let authData = await apiFetch(authUrl);
 
         if (!authData || (authData.user_info && authData.user_info.auth === 0)) {
-          return mostrarAlerta('❌ Usuario o contraseña incorrectos en el servidor seleccionado.', 'err');
+          return mostrarAlerta('❌ Usuario o clave incorrectos.', 'err');
         }
 
-        mostrarAlerta('⏳ Cargando categorías...', 'info');
-        let catUrl = `${host}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`;
-        appData.categories = await apiFetch(catUrl);
+        mostrarAlerta('⏳ Cargando Canales, Películas y Series...', 'info');
 
-        mostrarAlerta('⏳ Cargando lista de canales...', 'info');
-        let chanUrl = `${host}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
-        appData.channels = await apiFetch(chanUrl);
+        // Peticiones paralelas para mayor velocidad
+        let [liveCats, liveItems, vodCats, vodItems] = await Promise.all([
+          apiFetch(`${host}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`).catch(()=>[]),
+          apiFetch(`${host}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`).catch(()=>[]),
+          apiFetch(`${host}/player_api.php?username=${user}&password=${pass}&action=get_vod_categories`).catch(()=>[]),
+          apiFetch(`${host}/player_api.php?username=${user}&password=${pass}&action=get_vod_streams`).catch(()=>[])
+        ]);
 
-        document.getElementById('txtTotalCarpetas').innerText = `${appData.categories.length} Categorías disponibles`;
+        appData.liveCats = liveCats || [];
+        appData.liveItems = liveItems || [];
+        appData.vodCats = vodCats || [];
+        appData.vodItems = vodItems || [];
+
+        document.getElementById('txtLive').innerText = `${appData.liveItems.length} Canales`;
+        document.getElementById('txtVod').innerText = `${appData.vodItems.length} Películas`;
+        document.getElementById('txtSeries').innerText = `Contenido On Demand`;
+
         irA('screenDash');
 
       } catch (err) {
-        mostrarAlerta('❌ No se pudo conectar al servidor. Revisa los datos o el estado del servicio.', 'err');
+        mostrarAlerta('❌ Error de conexión con el servidor IPTV.', 'err');
       }
     }
 
-    function mostrarCarpetas() {
+    function cargarSeccion(type) {
+      currentType = type;
       irA('screenFolders');
       let box = document.getElementById('foldersBox');
       box.innerHTML = '';
 
-      appData.categories.forEach(cat => {
-        let count = appData.channels.filter(c => String(c.category_id) === String(cat.category_id)).length;
+      let cats = type === 'LIVE' ? appData.liveCats : appData.vodCats;
+      let items = type === 'LIVE' ? appData.liveItems : appData.vodItems;
+
+      cats.forEach(cat => {
+        let count = items.filter(i => String(i.category_id) === String(cat.category_id)).length;
         if (count > 0) {
           let item = document.createElement('div');
           item.className = 'folder-card';
-          item.innerHTML = `<i class="fa-solid fa-folder" style="color:#3b82f6; font-size:18px;"></i> <span>${cat.category_name} (${count})</span>`;
-          item.onclick = () => abrirListaCanales(cat.category_id, cat.category_name);
+          item.innerHTML = `<i class="fa-solid fa-folder" style="color:#3b82f6;"></i> <span>${cat.category_name} (${count})</span>`;
+          item.onclick = () => abrirLista(cat.category_id, cat.category_name);
           box.appendChild(item);
         }
       });
     }
 
-    function abrirListaCanales(catId, catName) {
+    function abrirLista(catId, catName) {
       document.getElementById('currentCatTitle').innerText = catName;
       irA('screenPlayer');
 
-      let filtered = appData.channels.filter(c => String(c.category_id) === String(catId));
+      let items = currentType === 'LIVE' ? appData.liveItems : appData.vodItems;
+      let filtered = items.filter(i => String(i.category_id) === String(catId));
       let box = document.getElementById('channelsBox');
       box.innerHTML = '';
 
       filtered.forEach(ch => {
-        let streamUrl = `${session.host}/live/${session.user}/${session.pass}/${ch.stream_id}.m3u8`;
+        let ext = ch.container_extension || (currentType === 'LIVE' ? 'm3u8' : 'mp4');
+        let streamType = currentType === 'LIVE' ? 'live' : 'movie';
+        let streamUrl = `${session.host}/${streamType}/${session.user}/${session.pass}/${ch.stream_id || ch.vod_id}.${ext}`;
+
         let btn = document.createElement('div');
         btn.className = 'channel-item';
-        btn.innerHTML = `<i class="fa-solid fa-play-circle" style="color:#3b82f6;"></i> <span>${ch.name}</span>`;
-        btn.onclick = () => reproducir(streamUrl, btn);
+        btn.innerHTML = `<i class="fa-solid ${currentType === 'LIVE' ? 'fa-play-circle' : 'fa-film'}" style="color:#3b82f6;"></i> <span>${ch.name}</span>`;
+        btn.onclick = () => reproducir(streamUrl, btn, ext);
         box.appendChild(btn);
       });
     }
 
-    function reproducir(streamUrl, element) {
+    function reproducir(streamUrl, element, extension) {
       document.querySelectorAll('.channel-item').forEach(e => e.classList.remove('active'));
       if (element) element.classList.add('active');
 
       let video = document.getElementById('mainVideo');
       let proxiedStream = `/api/proxy?url=${encodeURIComponent(streamUrl)}`;
 
-      if (playerInstance) playerInstance.destroy();
+      if (playerInstance) {
+        playerInstance.destroy();
+        playerInstance = null;
+      }
 
-      if (Hls.isSupported()) {
-        playerInstance = new Hls({ enableWorker: true });
+      // Si es película/serie (MP4/MKV) o navegador Safari/iOS
+      if (extension === 'mp4' || extension === 'mkv' || !Hls.isSupported()) {
+        video.src = proxiedStream;
+        video.play().catch(e => console.log('Autoplay bloqueado:', e));
+      } else {
+        // Para Canales en Vivo M3U8
+        playerInstance = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true
+        });
         playerInstance.loadSource(proxiedStream);
         playerInstance.attachMedia(video);
-        playerInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = proxiedStream;
-        video.play().catch(() => {});
+        playerInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play().catch(e => console.log('Autoplay bloqueado:', e));
+        });
       }
     }
 
