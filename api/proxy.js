@@ -1,15 +1,11 @@
-// File: api/proxy.js (Función serverless en Vercel)
+// File: api/proxy.js
 import axios from 'axios';
 
 export default async function handler(req, res) {
-  // Habilitar cabeceras CORS universales
-  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  res.setHeader('Access-Control-Allow-Headers', '*');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -19,18 +15,22 @@ export default async function handler(req, res) {
   const { url } = req.query;
 
   if (!url) {
-    return res.status(400).json({ error: 'Falta la URL de origen' });
+    return res.status(400).json({ error: 'Falta el parámetro URL' });
   }
 
   try {
+    const targetUrl = decodeURIComponent(url);
+
     const response = await axios({
       method: 'get',
-      url: decodeURIComponent(url),
+      url: targetUrl,
       responseType: 'stream',
+      maxRedirects: 5,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': '*/*'
       },
-      timeout: 10000
+      timeout: 25000
     });
 
     if (response.headers['content-type']) {
@@ -39,6 +39,7 @@ export default async function handler(req, res) {
 
     response.data.pipe(res);
   } catch (error) {
-    res.status(500).json({ error: 'Error de conexión con el servidor IPTV: ' + error.message });
+    console.error('Proxy Error:', error.message);
+    res.status(500).json({ error: 'Error al transmitir desde el servidor IPTV: ' + error.message });
   }
 }
